@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brmodelo version="3.0">
+  <modelo nome="Meu_Blog" descricao="Modelo Conceitual para o site meu_blog">
+    <entidades>
+      <entidade nome="Tema" descricao="Tema do blog">
+        <atributos>
+          <atributo nome="id_tema" tipo="inteiro" pk="true" descricao="Identificador único"/>
+          <atributo nome="nome_tema" tipo="texto" descricao="Nome do tema"/>
+          <atributo nome="caminho_css" tipo="texto" descricao="Caminho do arquivo CSS"/>
+        </atributos>
+      </entidade>
+      <entidade nome="Usuario" descricao="Usuário do sistema">
+        <atributos>
+          <atributo nome="id_usuario" tipo="inteiro" pk="true" descricao="Identificador único"/>
+          <atributo nome="nome" tipo="texto" descricao="Nome do usuário"/>
+          <atributo nome="email" tipo="texto" unico="true" descricao="Email único para login"/>
+          <atributo nome="senha" tipo="texto" descricao="Senha com hash seguro"/>
+          <atributo nome="data_cadastro" tipo="data" descricao="Data de cadastro"/>
+          <atributo nome="tema_preferido" tipo="inteiro" fk="true" referencia="Tema.id_tema" descricao="Tema preferido do usuário"/>
+        </atributos>
+      </entidade>
+      <entidade nome="Scrap" descricao="Mensagem/recado postado no blog">
+        <atributos>
+          <atributo nome="id_scrap" tipo="inteiro" pk="true" descricao="Identificador único"/>
+          <atributo nome="id_usuario" tipo="inteiro" fk="true" referencia="Usuario.id_usuario" descricao="Dono do blog que recebe o scrap"/>
+          <atributo nome="id_autor" tipo="inteiro" fk="true" referencia="Usuario.id_usuario" descricao="Usuário que escreveu o scrap"/>
+          <atributo nome="titulo" tipo="texto" descricao="Título do scrap"/>
+          <atributo nome="mensagem" tipo="texto" descricao="Conteúdo da mensagem"/>
+          <atributo nome="data_criacao" tipo="data_hora" descricao="Data de criação do scrap"/>
+        </atributos>
+      </entidade>
+    </entidades>
+    <relacionamentos>
+      <relacionamento nome="Usuario_Tema" descricao="Usuário escolhe um tema preferido">
+        <cardinalidades>
+          <cardinalidade entidade="Usuario" min="1" max="1" papel="tema_preferido"/>
+          <cardinalidade entidade="Tema" min="0" max="N" papel="tema"/>
+        </cardinalidades>
+      </relacionamento>
+      <relacionamento nome="Usuario_Scrap_Dono" descricao="Usuário dono do blog recebe scraps">
+        <cardinalidades>
+          <cardinalidade entidade="Usuario" min="1" max="N" papel="dono"/>
+          <cardinalidade entidade="Scrap" min="0" max="N" papel="scrap"/>
+        </cardinalidades>
+      </relacionamento>
+      <relacionamento nome="Usuario_Scrap_Autor" descricao="Usuário autor escreve scraps">
+        <cardinalidades>
+          <cardinalidade entidade="Usuario" min="1" max="N" papel="autor"/>
+          <cardinalidade entidade="Scrap" min="0" max="N" papel="scrap"/>
+        </cardinalidades>
+      </relacionamento>
+    </relacionamentos>
+  </modelo>
+</brmodelo>
