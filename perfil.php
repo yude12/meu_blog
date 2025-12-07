@@ -1,67 +1,110 @@
 <?php
 session_start();
 
-// Verifica se o usuário está logado
-if (!isset($_SESSION["status"]) || $_SESSION["status"] != "logado") {
-    header("Location: index.php");
-    exit();
+// Verifica login
+function teste_login($sessao, $local){
+    if($sessao != "ok"){
+        $local = $local."login.html";
+        header($local);
+        exit;
+    }
 }
 
-// Conexão com o banco
-include "DLL.php";
+function banco($server, $user, $password, $db, $consulta) {
+    $banco = new mysqli($server, $user, $password, $db);
+    if ($banco->connect_error) {
+        echo "Falha de conexão: (".$banco->connect_errno.") - ".$banco->connect_error;
+        exit();
+    }
+    if (!$resultado = $banco->query($consulta)) {
+        echo "Falha na consulta: (".$banco->errno.") - ".$banco->error;
+        exit();
+    }
+    $banco->close();
+    return $resultado;
+}
 
-$id_usuario = $_SESSION["id_usuario"]; // vem do login
+function databr($data){
+    $muda  = explode('-', $data);
+    return $muda[2]."/".$muda[1]."/".$muda[0];
+}
 
-// Busca os dados do usuário
-$sql = "SELECT conteudo FROM publicacoes WHERE id_usuario = '$id_usuario'";
-$resultado = $conn->query($sql);
-$usuario = $resultado->fetch_assoc();
+function form($action,$var1,$var2,$var3,$var4,$var5,$var6,$var7,$b1,$b2,$b3){
+    echo "<fieldset><form action='$action' method='post' enctype='multipart/form-data'>";
+    $vars = [$var1,$var2,$var3,$var4,$var5,$var6,$var7];
+    foreach($vars as $v){
+        if($v) echo "<label>$v:</label> <input type='text' name='$v'/><br>";
+    }
+    $btns = [$b1,$b2,$b3];
+    foreach($btns as $b){
+        if($b) echo "<input type='submit' name='$b' value='$b'/>";
+    }
+    echo "</form></fieldset>";
+}
 
-// Conta quantas publicações ele tem
-$sql_pub = "SELECT COUNT(*) AS total FROM publicacoes WHERE id_usuario = $id_usuario";
-$res_pub = $conn->query($sql_pub);
-$total = $res_pub->fetch_assoc()["total"];
+function XML($label,$x1,$x2,$x3,$x4,$x5,$x6,$x7,$x8,$x9,$x10,$file){
+    $xml = '<?xml version="1.0" encoding="utf-8"?><links><link>';
+    $vals = [$x1,$x2,$x3,$x4,$x5,$x6,$x7,$x8,$x9,$x10];
+    for($i=0;$i<10;$i++){
+        if(isset($vals[$i]) && $vals[$i]!=='') $xml .= "<".$label[$i].">".$vals[$i]."</".$label[$i].">";
+    }
+    $fim = count($label)-1;
+    $xml .= "<modo>".$label[$fim]."</modo>";
+    $xml .= "</link></links>";
+    file_put_contents($file, $xml);
+}
 
-// Busca as últimas publicações
-$sql_posts = "SELECT conteudo, data_publicacao FROM publicacoes WHERE id_usuario = $id_usuario ORDER BY id_publicacao DESC LIMIT 5";
-$res_posts = $conn->query($sql_posts);
+teste_login($_SESSION['sessao'] ?? '', 'Location: ');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $nome      = $_POST['nome'] ?? '';
+    $idade     = $_POST['idade'] ?? '';
+    $cidade    = $_POST['cidade'] ?? '';
+    $profissao = $_POST['profissao'] ?? '';
+    $bio       = $_POST['bio'] ?? '';
+
+    if (!is_dir('usuarios')) mkdir('usuarios', 0755, true);
+
+    $fotoNome = '';
+    if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
+        $fotoTemp = $_FILES['foto']['tmp_name'];
+        $fotoNome = 'usuarios/' . uniqid() . '_' . $_FILES['foto']['name'];
+        move_uploaded_file($fotoTemp, $fotoNome);
+    }
+
+    $labels = ['nome','idade','cidade','profissao','bio','foto','','','','modo'];
+
+    XML($labels, $nome, $idade, $cidade, $profissao, $bio, $fotoNome, '', '', '', '', "usuarios/$nome.xml");
+
+    $perfil = simplexml_load_file("usuarios/$nome.xml");
+
+} else {
+    form('', 'nome','idade','cidade','profissao','bio','foto', null, 'Enviar', null, null);
+    exit;
+}
+
 ?>
+
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Meu Perfil</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<title>Perfil de <?php echo htmlspecialchars($perfil->nome); ?></title>
 </head>
-<body class="principal">
+<body>
+<h2>Perfil do Usuário</h2>
 
-    <header>
-        <h1>Meu Perfil</h1>
-        <a href="principal.php">← Voltar</a>
-    </header>
+<?php if (!empty($perfil->foto)): ?>
+<img src="<?php echo htmlspecialchars($perfil->foto); ?>" width="150"><br><br>
+<?php endif; ?>
 
-    <main class="conteudo">
-        <h2><?= $usuario["nome"] ?></h2>
-        <p><strong>Email:</strong> <?= $usuario["email"] ?></p>
-        <p><strong>Membro desde:</strong> <?= date("d/m/Y", strtotime($usuario["data_de_cadastro"])) ?></p>
-        <p><strong>Total de publicações:</strong> <?= $total ?></p>
-
-        <hr>
-
-        <h3>Minhas últimas publicações</h3>
-
-        <?php if ($res_posts->num_rows == 0): ?>
-            <p>Você ainda não publicou nada.</p>
-        <?php else: ?>
-            <?php while ($p = $res_posts->fetch_assoc()): ?>
-                <div class="publicacao">
-                    <p><?= nl2br(htmlspecialchars($p["conteudo"])) ?></p>
-                    <small>Data: <?= date("d/m/Y H:i", strtotime($p["data_publicacao"])) ?></small>
-                    <hr>
-                </div>
-            <?php endwhile; ?>
-        <?php endif; ?>
-    </main>
+<strong>Nome:</strong> <?php echo htmlspecialchars($perfil->nome); ?><br>
+<strong>Idade:</strong> <?php echo htmlspecialchars($perfil->idade); ?><br>
+<strong>Cidade:</strong> <?php echo htmlspecialchars($perfil->cidade); ?><br>
+<strong>Profissão:</strong> <?php echo htmlspecialchars($perfil->profissao); ?><br><br>
+<strong>Biografia:</strong><br>
+<?php echo nl2br(htmlspecialchars($perfil->bio)); ?>
 
 </body>
 </html>
