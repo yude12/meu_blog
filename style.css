@@ -1,0 +1,108 @@
+/* ======== BASE ======== */
+body {
+  font-family: Arial, sans-serif;
+  background: #f5d4b0;
+  color: #4b2f1e;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+h1, h2 { color: #4b2f1e; }
+
+/* ======== HEADER & NAV ======== */
+header{
+  background:#b47b48;
+  color:#fff;
+  padding:14px 10px;
+  border-bottom:3px solid #8e5f34;
+}
+header h1{ margin:0; }
+header h3{ margin:6px 0 0; font-weight: normal; }
+
+nav ul{
+  list-style:none; margin:0; padding:8px 10px;
+  display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+  background:#8e5f34;
+}
+nav a{
+  color:#fff; text-decoration:none; padding:6px 10px; border-radius:6px;
+}
+nav a:hover{ background:rgba(255,255,255,.15); }
+
+/* ======== CONTAINERS ======== */
+main, .conteudo, .container {
+  max-width: 800px;
+  margin: 30px auto;
+  background: #ffe9c9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: left;          /* conteúdo interno alinhado à esquerda */
+}
+
+/* ======== FORMULÁRIO DE PUBLICAÇÃO ======== */
+form {
+  display: block;            /* centraliza via margin */
+  width: 100%;
+  max-width: 640px;
+  margin: 16px auto;
+  text-align: left;
+  background: #caa46f;
+  padding: 20px;             /* menos exagerado para mobile */
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+label { display:block; margin-top:10px; font-weight:bold; }
+
+input, textarea, select, button {
+  width: 100%;
+  max-width: 100%;           /* ignora cols do HTML e ocupa o card */
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #b47b48;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+textarea{ min-height: 120px; resize: vertical; }
+
+button, input[type="submit"] {
+  background: #b47b48;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  margin-top: 14px;
+  transition: background .2s;
+}
+button:hover, input[type="submit"]:hover { background: #8e5f34; }
+
+/* ======== LINKS E TEXTO ======== */
+a { color: #4b2f1e; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ======== BANNER "EM CONSTRUÇÃO" ======== */
+.construction-banner{
+  max-width:800px; margin:18px auto; text-align:center;
+  background:#fff8ee; border:1px solid #e2b58c; border-radius:8px; padding:12px;
+}
+.construction-banner img{ max-width:240px; height:auto; display:block; margin:0 auto 8px; }
+
+/* ======== BLOCO DE PUBLICAÇÕES (se usar) ======== */
+.publicacao {
+  background: #fff;
+  border: 1px solid #e2b58c;
+  border-radius: 6px;
+  padding: 10px;
+  margin: 10px 0;
+}
+.publicacao small { color: #5c3b2b; font-size: 0.9em; }
+
+hr { border:none; border-top:1px solid #d2a777; margin:10px 0; }
+
+/* ======== RESPONSIVO ======== */
+@media (max-width: 520px){
+  main, .conteudo, .container { margin:16px auto; padding:14px; }
+  form{ padding:14px; }
+  .construction-banner{ margin:12px auto; }
+}
