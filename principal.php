@@ -18,7 +18,6 @@ $sql = "
     ORDER BY p.criado_em DESC
 ";
 
-// Você pode usar banco(...) ou $conn->query(...). Vou usar $conn direto.
 $result = $conn->query($sql);
 if (!$result) {
     die("Erro na consulta: (" . $conn->errno . ") " . $conn->error);
@@ -90,6 +89,7 @@ if (!$result) {
 
 </body>
 </html>
+
 
 
 
